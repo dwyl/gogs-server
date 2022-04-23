@@ -258,6 +258,8 @@ git clone -p 2222 git@gogs-server.fly.dev:10022/nelsonic/public-repo.git
   https://fly.io/docs/getting-started/multi-region-databases/
 - Scaling and Autoscaling
   https://fly.io/docs/reference/scaling/
+- Autoscale:
+  https://fly.io/docs/flyctl/autoscale/
 
 ```
 [[services]]

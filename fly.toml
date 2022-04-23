@@ -12,10 +12,8 @@ processes = []
 [build]
   image = "gogs/gogs"
 
-[env]
-
 [experimental]
-  allowed_public_ports = []
+  allowed_public_ports = [22]
   auto_rollback = true
 
 [[services]]
@@ -63,5 +61,5 @@ protocol      = "tcp"
 source="data"
 destination="/data"
 
-# Autoscaling Config
+# Autoscaling Config ?
 
