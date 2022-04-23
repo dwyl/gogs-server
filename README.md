@@ -220,7 +220,7 @@ https://gogs-server.fly.dev/nelsonic/public-repo
 Clone the repo:
 
 ```sh
-git clone git@gogs-server.fly.dev:10022/nelsonic/public-repo.git
+git clone git@gogs-server.fly.dev:nelsonic/public-repo.git
 ```
 
 Attepmt to specify the TCP port:

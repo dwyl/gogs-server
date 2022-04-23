@@ -49,9 +49,9 @@ processes = []
 internal_port = 22
 protocol      = "tcp"
 
-  [[services.ports]]
+    [[services.ports]]
     handlers = []
-    port     = 22
+    port     = 10022
 
     [[services.tcp_checks]]
     interval = 10000
