@@ -45,6 +45,18 @@ processes = []
     restart_limit = 0
     timeout = "2s"
 
+[[services]]
+internal_port = 22
+protocol      = "tcp"
+
+  [[services.ports]]
+    handlers = []
+    port     = 22
+
+    [[services.tcp_checks]]
+    interval = 10000
+    timeout  = 2000
+
 # Volume storage for Git & Blob data
 
 [[mounts]]
