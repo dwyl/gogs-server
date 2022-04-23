@@ -147,6 +147,12 @@ In my case it was at:
 /data/gogs/conf/app.ini
 ```
 
+Make a backup of the file:
+
+```sh
+
+```
+
 Edit/update it:
 
 ```sh
@@ -172,6 +178,11 @@ gogs-server is being restarted
 ### SSH Config
 
 https://community.fly.io/t/ssh-connection-to-an-instance/834/2
+
+```sh
+2022-04-23T23:19:42Z   [info]2022/04/23 23:19:42 [FATAL] [gogs.io/gogs/internal/ssh/ssh.go:130 listen()] Failed to start SSH server: listen tcp 0.0.0.0:22: bind: permission denied
+2022-04-23T23:19:43Z   [info]2022/04/23 23:19:43 [ INFO] Gogs 0.13.0+dev
+```
 
 #### Add SSH Key
 
