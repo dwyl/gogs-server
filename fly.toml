@@ -1,11 +1,14 @@
-# fly.toml file generated for gogs-server on 2022-04-22T01:04:08+01:00
+# fly.toml file generated for gogs-server
 
+# Change this for your App's name
 app = "gogs-server"
 
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
+# Pulls latest Gogs image from Docker Hub:
+# https://hub.docker.com/r/gogs/gogs
 [build]
   image = "gogs/gogs"
 
@@ -42,18 +45,11 @@ processes = []
     restart_limit = 0
     timeout = "2s"
 
-[[services]]
-internal_port = 22
-protocol      = "tcp"
-
-    [[services.ports]]
-    handlers = []
-    port     = 10022
-
-    [[services.tcp_checks]]
-    interval = 10000
-    timeout  = 2000
+# Volume storage for Git & Blob data
 
 [[mounts]]
 source="data"
 destination="/data"
+
+# Autoscaling Config
+

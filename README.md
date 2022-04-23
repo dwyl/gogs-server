@@ -35,6 +35,8 @@ We love it and recommend it to anyone tired
 
 ### Why `Postgres`?
 
+## _What_?
+
 ## How?
 
 ### Create an App
@@ -121,15 +123,111 @@ fly postgres attach --app gogs-server --postgres-app gogs-server-db
 
 > Insert screenshots here!
 
+If you make a mistake with the setup of your Gogs server,
+don't panic, you can _easily_ update
+the
+[`app.ini`](https://github.com/gogs/gogs/blob/main/conf/app.ini)
+file to change any of the settings.
+
+Login to the VM via ssh:
+
+```sh
+flyctl ssh console
+```
+
+Track down the `app.ini` file on the instance:
+
+```sh
+find / -name app.ini
+```
+
+In my case it was at:
+
+```sh
+/data/gogs/conf/app.ini
+```
+
+Edit/update it:
+
+```sh
+vi /data/gogs/conf/app.ini
+```
+
+If you make any changes to the `app.ini` file,
+you will need to restart the VM that is running your `gogs` instance.
+e.g:
+
+```sh
+flyctl restart gogs-server
+```
+
+You will see output confirming the restart:
+
+```sh
+gogs-server is being restarted
+```
+
 ### Test the `Gogs` Instance
+
+### SSH Config
+
+https://community.fly.io/t/ssh-connection-to-an-instance/834/2
 
 #### Add SSH Key
 
->
+Copy the **_`public`_** `ssh` key on your main computer.
+In my case the `id_rsa.pub` file is located at
+`~/.ssh/id_rsa.pub`
+on my Mac.
+So to copy the contents of the file,
+I run the following command:
+
+```sh
+pbcopy < ~/.ssh/id_rsa.pub
+```
+
+Next, connect to the `Gogs` Server
+and visit the `/user/settings/ssh`
+page, e.g:
+https://gogs-server.fly.dev/user/settings/ssh
+
+Once you've successfully added your **_`public`_** `ssh` key
+to `Gogs` you should see a success message such as:
+
+<img width="1217" alt="image" src="https://user-images.githubusercontent.com/194400/164786677-18901fe2-1c38-4419-b63f-395ba9ff6d9e.png">
+
+### Configure SSH
+
+```sh
+vi ~/.ssh/config
+```
+
+Add the following lines:
+
+```sh
+
+```
+
+https://docs.github.com/en/authentication/troubleshooting-ssh/using-ssh-over-the-https-port
 
 #### Clone Repo
 
->
+Create a repository if you don't already have one, e.g:
+https://gogs-server.fly.dev/nelsonic/public-repo
+
+![image](https://user-images.githubusercontent.com/194400/164581017-247d388b-0ed5-475a-960d-55140247e47c.png)
+
+Clone the repo:
+
+```sh
+git clone git@gogs-server.fly.dev:10022/nelsonic/public-repo.git
+```
+
+Attepmt to specify the TCP port:
+
+```sh
+git clone -p 2222 git@gogs-server.fly.dev:10022/nelsonic/public-repo.git
+```
 
 #### Make local changes
 
@@ -148,6 +246,8 @@ fly postgres attach --app gogs-server --postgres-app gogs-server-db
 - Fly CLI: https://fly.io/docs/flyctl/
 - Fly Launch: https://fly.io/docs/flyctl/launch/
 - Fly Deploy: https://fly.io/docs/flyctl/deploy/
+- App Configuration (fly.toml):
+  https://fly.io/docs/reference/configuration/
 - Appkata: Gogs - standalone Git Server (Fly.io)
   https://fly.io/docs/app-guides/git-gogs-server/
   **Note**: this is a bit old (2020)
@@ -158,3 +258,17 @@ fly postgres attach --app gogs-server --postgres-app gogs-server-db
   https://fly.io/docs/getting-started/multi-region-databases/
 - Scaling and Autoscaling
   https://fly.io/docs/reference/scaling/
+
+```
+[[services]]
+internal_port = 22
+protocol      = "tcp"
+
+    [[services.ports]]
+  handlers = []
+    port     = 10022
+
+    [[services.tcp_checks]]
+    interval = 10000
+    timeout  = 2000
+```
