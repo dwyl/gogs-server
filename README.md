@@ -2,7 +2,7 @@
 
 ![gogs-server-logo](https://user-images.githubusercontent.com/194400/164705537-8253ff09-581d-438d-8025-453eecb41b96.png "gogs server setup")
 
-Deployment docs for our `Gogs` server on Fly.io.
+Deployment docs for our `Gogs` server on Fly.io: https://gogs-server.fly.dev
 
 </div>
 
@@ -22,9 +22,9 @@ So we needed an _easy_ way to **backup** our data. 💾
 
 **`Gogs`** is a **_lightweight_ `Git` server**
 with a familiar UI/UX
-(think GitHub circa 2018 clone)
+(think GitHub circa 2018 clone) <br />
 that can be deployed in **5 minutes**
-and has _most_ of the GitHub features we use
+and has _most_ of the GitHub features we _use_. <br />
 e.g:
 Orgs, Repos, Markdown editor/viewer, Issues & Pull Requests.
 
@@ -61,6 +61,8 @@ and great tooling.
 
 This repository documents our deployment of our **`Gogs`** server.
 
+See: https://gogs-server.fly.dev/
+
 ## How?
 
 This is a step-by-step guide for recreating our server.
@@ -76,7 +78,8 @@ flyctl launch --name gogs-server --image gogs/gogs --org dwyl
 
 > In our case we called our app `gogs-server`,
 > pretty self-explanatory and not very creative.
-> We like it when DevOps is _obvious_.
+> We like it when DevOps is
+> [_immediately obvious_](https://en.wikipedia.org/wiki/KISS_principle).
 > It dramatically reduces cognitive overload
 > and context switching costs!
 
@@ -114,6 +117,7 @@ The default size is 10Gb.
 We definitely won't need that much.
 
 <br />
+<hr />
 
 #### Quick Note on Fly.io Postgres Database Clusters
 
@@ -125,6 +129,8 @@ on as you like, the resources are scaled up automatically.
 > They’re directed to the nearest running instance automatically._"
 
 Just remember to _enable_ autoscaling on your DB cluster (see below).
+
+<hr />
 
 ### Create `PostgreSQL` DB & Attach to `Gogs`
 
@@ -154,7 +160,13 @@ fly postgres attach --app gogs-server --postgres-app gogs-server-db
 
 ### Intialize `Gogs`!
 
-> Insert screenshots here!
+When you first visit your `Gogs` instance,
+you will be redirected to the `/install` page.
+These were the settings we defined on ours:
+
+![gogs-fly-config-1of-2](https://user-images.githubusercontent.com/194400/165000531-6e352107-860b-4bb2-ad29-4f172f6fc08d.png)
+
+![gogs-fly-config-2of-2](https://user-images.githubusercontent.com/194400/165000528-79275762-f070-4bf0-b440-5a0fbf1ba9bc.png)
 
 If you make a mistake with the setup of your Gogs server,
 don't panic, you can _easily_ update
@@ -195,14 +207,17 @@ vi /data/gogs/conf/app.ini
 I updated:
 
 ```sh
-SSH_PORT         = 22
+SSH_PORT = 22
 ```
 
 To
 
 ```sh
-SSH_PORT         = 10022
+SSH_PORT = 10022
 ```
+
+This mirrors the port forwarding defined in the `fly.toml` file:
+[fly.toml#L52](https://github.com/dwyl/gogs-server/blob/559d583070fe1db3d65189e662fefcb5932abc15/fly.toml#L52)
 
 If you make any changes to the `app.ini` file,
 you will need to restart the VM that is running your `gogs` instance.
@@ -220,7 +235,15 @@ gogs-server is being restarted
 
 ### Test the `Gogs` Instance
 
-<--
+https://gogs-server.fly.dev/nelsonic
+
+![image](https://user-images.githubusercontent.com/194400/165000758-0ca9e54d-2c8a-429f-9c84-ff4bfd68bed2.png)
+
+I created a couple of repos, one `public` the other `private` to test.
+
+Next we want to _interact_ with a repo ...
+
+<!--
 
 ### SSH Config
 
@@ -234,6 +257,10 @@ https://community.fly.io/t/ssh-connection-to-an-instance/834/2
 -->
 
 #### Add SSH Key
+
+Add your `ssh` key to the `Gogs` instance
+so that you can interact with the repo via `git`
+in your terminal.
 
 Copy the **_`public`_** `ssh` key on your main computer.
 In my case the `id_rsa.pub` file is located at
@@ -358,6 +385,8 @@ Here is the content on the `draft` branch:
   and there is no longer a `fly init` command
   and the `fly.toml` file is incomplete.
   Hence us needing to write these docs.
+  Thanks given to @codepope in:
+  https://community.fly.io/t/gogs-standalone-git-service-as-a-fly-example/358/2
 - Multi-region PostgreSQL:
   https://fly.io/docs/getting-started/multi-region-databases/
 - Scaling and Autoscaling
