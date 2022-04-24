@@ -10,18 +10,23 @@ Deployment docs for our `Gogs` server on Fly.io.
 
 We use GitHub as the
 [single source of truth](https://en.wikipedia.org/wiki/Single_source_of_truth)
-for our Product & Services.
+for our Product & Services. ⭐<br />
 Occasionally GitHub has
-"incidents" https://www.githubstatus.com/history
-where it's offline for hours ... ⏳
+["incidents"](https://www.githubstatus.com/history)
+where it's offline for hours ... ⏳ <br />
 Also, GitHub can
 [**_lose_ data**](https://news.ycombinator.com/item?id=31033758)
-if you're not careful; i.e. **`delete`** is **_forever_**!
-So we needed an _easy_ way to **backup** our data.
+if you're not careful;
+i.e. **`delete`** is **_forever_**! 🤦‍♀‍<br />
+So we needed an _easy_ way to **backup** our data. 💾
 
-Gogs is a lightweight Git server
+**`Gogs`** is a **_lightweight_ `Git` server**
+with a familiar UI/UX
+(think GitHub circa 2018 clone)
 that can be deployed in **5 minutes**
-and has _most_ of the GitHub features we use.
+and has _most_ of the GitHub features we use
+e.g:
+Orgs, Repos, Markdown editor/viewer, Issues & Pull Requests.
 
 ### Why Fly.io?
 
@@ -31,13 +36,35 @@ with an underlying easily accessible Infrastructure as a Service
 ([IaaS](https://en.wikipedia.org/wiki/Infrastructure_as_a_service)).
 It combines the best elements of AWS and many from Heroku
 but focusses on the essential and eliminates the bloat.
-We love it and recommend it to anyone tired
+We love it and recommend it to anyone
+tired of the _complexity_ of AWS or the _cost_ of Heroku.
 
 ### Why `Postgres`?
 
+As the tagline says:
+"_PostgreSQL: The World's Most Advanced Open Source Relational Database_."
+
+We use and love it because it's fast, has excellent docs
+and great tooling.
+
+> **Note**: We've used MySQL or MariaDB in the past they are both good.
+> We think Postgres is better.
+> It's the default Database for
+> [**`Phoenix`**](https://github.com/dwyl/learn-phoenix-framework#our-top-10-reasons-why-phoenix)
+> our chosen Web Framework,
+> so using it with our **`Gogs`** server makes sense
+> to reduce cognitive load and cost.
+
+<br />
+
 ## _What_?
 
+This repository documents our deployment of our **`Gogs`** server.
+
 ## How?
+
+This is a step-by-step guide for recreating our server.
+If you find it useful, please ⭐
 
 ### Create an App
 
@@ -88,7 +115,7 @@ We definitely won't need that much.
 
 <br />
 
-## Quick Note on Fly.io Postgres Database Clusters
+#### Quick Note on Fly.io Postgres Database Clusters
 
 If you already have a Postgres database cluster on Fly,
 you can host as many Postgres databases
@@ -110,6 +137,12 @@ fly pg create --name gogs-server-db --region lhr
 > Use your preferred region.
 
 ### Enable Autoscaling
+
+see: https://fly.io/docs/reference/scaling/
+
+```sh
+fly autoscale standard min=1
+```
 
 ### Attach the DB to the `Gogs` App
 
@@ -147,16 +180,28 @@ In my case it was at:
 /data/gogs/conf/app.ini
 ```
 
-Make a backup of the file:
-
-```sh
-
-```
+Before making any changes,
+make a backup of the file
+in case you need to revert.
+e.g:
+[`gogs-server/main/app.ini`](https://github.com/dwyl/gogs-server/blob/main/app.ini)
 
 Edit/update it:
 
 ```sh
 vi /data/gogs/conf/app.ini
+```
+
+I updated:
+
+```sh
+SSH_PORT         = 22
+```
+
+To
+
+```sh
+SSH_PORT         = 10022
 ```
 
 If you make any changes to the `app.ini` file,
@@ -175,6 +220,8 @@ gogs-server is being restarted
 
 ### Test the `Gogs` Instance
 
+<--
+
 ### SSH Config
 
 https://community.fly.io/t/ssh-connection-to-an-instance/834/2
@@ -183,6 +230,8 @@ https://community.fly.io/t/ssh-connection-to-an-instance/834/2
 2022-04-23T23:19:42Z   [info]2022/04/23 23:19:42 [FATAL] [gogs.io/gogs/internal/ssh/ssh.go:130 listen()] Failed to start SSH server: listen tcp 0.0.0.0:22: bind: permission denied
 2022-04-23T23:19:43Z   [info]2022/04/23 23:19:43 [ INFO] Gogs 0.13.0+dev
 ```
+
+-->
 
 #### Add SSH Key
 
@@ -207,20 +256,6 @@ to `Gogs` you should see a success message such as:
 
 <img width="1217" alt="image" src="https://user-images.githubusercontent.com/194400/164786677-18901fe2-1c38-4419-b63f-395ba9ff6d9e.png">
 
-### Configure SSH
-
-```sh
-vi ~/.ssh/config
-```
-
-Add the following lines:
-
-```sh
-
-```
-
-https://docs.github.com/en/authentication/troubleshooting-ssh/using-ssh-over-the-https-port
-
 #### Clone Repo
 
 Create a repository if you don't already have one, e.g:
@@ -228,29 +263,87 @@ https://gogs-server.fly.dev/nelsonic/public-repo
 
 ![image](https://user-images.githubusercontent.com/194400/164581017-247d388b-0ed5-475a-960d-55140247e47c.png)
 
-Clone the repo:
+If you attempt to clone the repo
+using a standard command, e.g:
 
 ```sh
 git clone git@gogs-server.fly.dev:nelsonic/public-repo.git
 ```
 
-Attepmt to specify the TCP port:
+You will see the following error:
 
 ```sh
-git clone -p 2222 git@gogs-server.fly.dev:10022/nelsonic/public-repo.git
+
+ssh: connect to host gogs-server.fly.dev port 22: Connection refused
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+```
+
+This is because the `TCP` port **`22`** is reserved
+for actual `SSH` connections on Fly.io.
+We could re-assign it for use with **`Gogs`**,
+but then we would lose the ability to `ssh` into the instance ...
+We don't want that,
+because it's useful to **`fly ssh console`**
+to debug & maintain the instance.
+
+Attempt to specify the TCP port:
+
+```sh
+git clone -p 10022 git@gogs-server.fly.dev:nelsonic/public-repo.git
+```
+
+That doesn't work.
+So reading:
+https://stackoverflow.com/questions/5767850/git-on-custom-ssh-port
+
+Trying the following format:
+https://stackoverflow.com/a/5767880/1148249
+
+```sh
+git clone ssh://git@mydomain.com:[port]/org|usernam/repo-name.git
+```
+
+e.g:
+
+```sh
+git clone ssh://git@gogs-server.fly.dev:10022/nelsonic/public-repo.git
 ```
 
 #### Make local changes
 
->
+Update the `README.md` on my Mac:
+
+<img width="1088" alt="image" src="https://user-images.githubusercontent.com/194400/165000134-7adfe672-01cf-4637-bb71-02c95e58709a.png">
 
 #### Commit & Push Changes
 
->
+`git commit` and `git push` the code:
+
+```sh
+git push
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 350 bytes | 350.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+To ssh://gogs-server.fly.dev:10022/nelsonic/public-repo.git
+   7f92c5d..f714a64  master -> master
+```
 
 #### Confirm they Worked!
 
->
+https://gogs-server.fly.dev/nelsonic/public-repo
+![image](https://user-images.githubusercontent.com/194400/165000085-de1166d1-6f89-4dc9-9c47-aae89fca9003.png)
+
+Branches work:
+![image](https://user-images.githubusercontent.com/194400/164999937-ac78290e-5d09-4016-8b26-252a1134ba98.png)
+
+Here is the content on the `draft` branch:
+![image](https://user-images.githubusercontent.com/194400/164999949-d0076a91-3cf5-417d-8944-82861e2e39d7.png)
 
 ## Recommended Reading
 
@@ -271,17 +364,11 @@ git clone -p 2222 git@gogs-server.fly.dev:10022/nelsonic/public-repo.git
   https://fly.io/docs/reference/scaling/
 - Autoscale:
   https://fly.io/docs/flyctl/autoscale/
+- Auto-scaling tutorial:
+  https://hosting.analythium.io/auto-scaling-shiny-apps-in-multiple-regions-with-fly-io/
+- SSH troubleshooting:
+  https://docs.github.com/en/authentication/troubleshooting-ssh/using-ssh-over-the-https-port
 
-```
-[[services]]
-internal_port = 22
-protocol      = "tcp"
+<hr />
 
-    [[services.ports]]
-  handlers = []
-    port     = 10022
-
-    [[services.tcp_checks]]
-    interval = 10000
-    timeout  = 2000
-```
+[![HitCount](http://hits.dwyl.com/dwyl/gogs-server.svg)](http://hits.dwyl.com/dwyl/gogs-server)
