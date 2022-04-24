@@ -372,6 +372,145 @@ Branches work:
 Here is the content on the `draft` branch:
 ![image](https://user-images.githubusercontent.com/194400/164999949-d0076a91-3cf5-417d-8944-82861e2e39d7.png)
 
+<br />
+<br />
+
+## Connect via `REST API` (`HTTPS`)
+
+The second way of connecting to `Gogs` is via the `REST` API.
+Here we will be following and expanding on the official docs:
+https://github.com/gogs/docs-api
+
+Visit: `/user/settings/applications` of your `Gogs` instance,
+e.g:
+https://gogs-server.fly.dev/user/settings/applications
+
+![gogs-gen-new-token](https://user-images.githubusercontent.com/194400/165130480-1af6bdf0-939a-4fcb-8af8-3a42f6f8f10a.png)
+
+And click on **`Generate New Token`**.
+
+Then input the name of your token,
+in case you end up with multiple tokens.
+
+![gogs-gen-token](https://user-images.githubusercontent.com/194400/165130700-fd515ee1-3d51-4773-96cf-2fcbbe0a79ea.png)
+
+Token generated:
+
+![token-generated](https://user-images.githubusercontent.com/194400/165130794-4e732298-8d60-4107-9054-3d8deb343e6f.png)
+
+My access token is:
+**`0ed304c9921c2cf33da4c832f843c160b70bb97e`**.
+We will be using this below. Make a note of yours.
+
+> Don't worry, this token was **deleted _immediately_**
+> after we confirmed that everything was working while writing this guide
+> (**_`before`_** publishing it!) so no risk in making this example public.
+
+With this access token in-hand we can now run
+[`cURL`](https://en.wikipedia.org/wiki/CURL)
+commands
+to test the `REST API`, e.g:
+
+```sh
+curl -u "nelsonic" 'https://gogs-server.fly.dev/api/v1/users/unknwon/tokens'
+```
+
+You will be prompted for the password for your username on `gogs`
+
+Response:
+
+```sh
+[{"name":"API Test","sha1":"0ed304c9921c2cf33da4c832f843c160b70bb97e"}]%
+```
+
+The same as the token above.
+
+Now let's test accessing a repo via the `REST API`:
+
+```sh
+curl 'https://gogs-server.fly.dev/api/v1/repos/nelsonic/public-repo?token=0ed304c9921c2cf33da4c832f843c160b70bb97e'
+```
+
+```json
+{
+  "id": 1,
+  "owner": {
+    "id": 1,
+    "username": "nelsonic",
+    "login": "nelsonic",
+    "full_name": "",
+    "email": "nelson@dwyl.com",
+    "avatar_url": "https://secure.gravatar.com/avatar/f937427bea8db9d88608a54b2b803f1a?d=identicon"
+  },
+  "name": "public-repo",
+  "full_name": "nelsonic/public-repo",
+  "description": "testing public repo on gogs server running on fly.io",
+  "private": false,
+  "fork": false,
+  "parent": null,
+  "empty": false,
+  "mirror": false,
+  "size": 61440,
+  "html_url": "https://gogs-server.fly.dev/nelsonic/public-repo",
+  "ssh_url": "ssh://git@https://gogs-server.fly.dev:10022/nelsonic/public-repo.git",
+  "clone_url": "https://gogs-server.fly.dev/nelsonic/public-repo.git",
+  "website": "",
+  "stars_count": 0,
+  "forks_count": 0,
+  "watchers_count": 1,
+  "open_issues_count": 0,
+  "default_branch": "master",
+  "created_at": "2022-04-22T01:53:48Z",
+  "updated_at": "2022-04-22T01:53:48Z",
+  "permissions": {
+    "admin": true,
+    "push": true,
+    "pull": true
+  }
+}
+```
+
+Next we want to read the contents of the `README.md` of a repo,
+the API path has the following pattern:
+
+```sh
+/api/v1/repos/:username/:reponame/raw/:ref/:path
+```
+
+Example:
+
+```sh
+curl 'https://gogs-server.fly.dev/api/v1/repos/nelsonic/public-repo/raw/master/README.md?token=0ed304c9921c2cf33da4c832f843c160b70bb97e'
+```
+
+Response:
+
+```md
+# public-repo
+
+testing public repo on gogs server running on fly.io
+
+Update on `README.md` Mac ... 🚀
+```
+
+Exactly what we expect it to be. 🎉
+**`REST API`** is working. ✅
+
+#### Delete the Token
+
+As noted above, we **_removed_** the **access token**
+from our `Gogs` server
+before publishing this:
+
+![gogs-token-deleted](https://user-images.githubusercontent.com/194400/165134016-e0f16797-cb54-4fb0-987c-66623d5b6599.png)
+
+In a real-world app,
+API Key rotation is a good idea.
+see:
+https://cloud.google.com/kms/docs/key-rotation
+
+<br />
+
 ## Recommended Reading
 
 - Fly CLI: https://fly.io/docs/flyctl/
