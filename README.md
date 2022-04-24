@@ -372,6 +372,45 @@ Branches work:
 Here is the content on the `draft` branch:
 ![image](https://user-images.githubusercontent.com/194400/164999949-d0076a91-3cf5-417d-8944-82861e2e39d7.png)
 
+### Check that it works for the _`private`_ repo
+
+```sh
+git clone ssh://git@gogs-server.fly.dev:10022/nelsonic/private-repo.git
+```
+
+Edit the `README.md`:
+
+<img width="874" alt="image" src="https://user-images.githubusercontent.com/194400/165135543-0994659a-108f-4349-830d-6f7117f1d120.png">
+
+```sh
+git add . && git commit -m 'updated on mac' && git push
+```
+
+Output:
+
+```sh
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 341 bytes | 341.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+To ssh://gogs-server.fly.dev:10022/nelsonic/private-repo.git
+   5977268..c5d8552  master -> master
+```
+
+Result: https://gogs-server.fly.dev/nelsonic/private-repo
+
+![private-repo-updated](https://user-images.githubusercontent.com/194400/165135838-e79e4098-041d-4093-92c3-4c2ba88aa297.png)
+
+Though you'll just have to take our word for it
+because the repo is **_`private_** ...
+
+![private-repo-404](https://user-images.githubusercontent.com/194400/165135960-24e20e24-756a-46f2-b3d1-efcbd159e3e5.png)
+
+You will see a **`404`** error if you attempt to visit the URL.
+
 <br />
 <br />
 
@@ -496,7 +535,7 @@ Update on `README.md` Mac ... 🚀
 Exactly what we expect it to be. 🎉
 **`REST API`** is working. ✅
 
-#### Delete the Token
+#### Delete the Token
 
 As noted above, we **_removed_** the **access token**
 from our `Gogs` server
