@@ -244,7 +244,7 @@ setting UI automatically.
 You will need to rewrite the file manualy by runing the admin command:
 ![image](https://user-images.githubusercontent.com/6057298/167601533-4f1c3100-db98-4a86-95ea-dd0b7970f664.png)
 
-see: https://github.com/gogs/gogs/issues/4751https://github.com/gogs/gogs/issues/4751
+see: https://github.com/gogs/gogs/issues/4751
 
 ### Test the `Gogs` Instance
 
